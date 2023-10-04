@@ -48,7 +48,11 @@ io.on('connection', (socket) => {
       numUsers: numUsers
     });
     // 更新用户列表
+    allUsernames.push(username);
     io.emit('userList', allUsernames); // 向客户端广播所有用户名列表
+
+    console.log(`${username} has joined.`);
+    console.log('All usernames:', allUsernames);
 
   });
 
@@ -76,8 +80,18 @@ io.on('connection', (socket) => {
         username: socket.username,
         numUsers: numUsers
       });
+    // 更新用户列表
+    const index = allUsernames.indexOf(socket.username);
+    if (index !== -1) {
+      allUsernames.splice(index, 1);
+    }
+
+
       // 更新用户列表
       io.emit('userList', allUsernames); // 向客户端广播所有用户名列表
+
+      console.log(`${socket.username} has left.`);
+      console.log('All usernames:', allUsernames);
 
     }
   });

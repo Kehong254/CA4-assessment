@@ -26,6 +26,8 @@ $(function() {
     return `${hours}:${minutes}`;
   }
 
+  const onlineUsers = [];
+
 
   // Prompt for setting a username
   let username= "";
@@ -64,18 +66,18 @@ $(function() {
 
 
   const addToUsersBox = function (username) {
+    if (!onlineUsers.includes(username)) {
+      onlineUsers.push(username);
 
-    if (!!document.querySelector(`.${username}-userlist`)) {
-        return;
+      const userBox = `
+        <div class="chat_id ${username}-userlist">
+          <h5>${username}</h5>
+        </div>
+      `;
+
+      inboxPeople.innerHTML += userBox;
     }
-    const userBox = `
-    <div class="chat_id ${username}-userlist">
-      <h5>${username}</h5>
-    </div>
-  `;
-
-    inboxPeople.innerHTML += userBox;
-};
+  };
 
 
 
@@ -84,15 +86,18 @@ $(function() {
 
 //when a new user event is detected
 socket.on("new user", function (data) {
-  data.map(function (user) {
-          return addToUsersBox(user);
-      });
+  data.forEach(function (user) {
+    addToUsersBox(user);
+  });
 });
 //when a user leaves
 socket.on("user disconnected", function (username) {
-  document.querySelector(`.${username}-userlist`).remove();
+  const index = onlineUsers.indexOf(username);
+  if (index !== -1) {
+    onlineUsers.splice(index, 1); // 从在线用户数组中移除用户
+    document.querySelector(`.${username}-userlist`).remove(); // 移除用户框
+  }
 });
-
 
 
 
