@@ -338,21 +338,22 @@ socket.on("user disconnected", function (username) {
 
 
 
-  //Listening for user list messages
-  socket.on('userList', (data) => {
-      //Dynamic display of userList data to the left menu
-      $('.user-list ul').html('');    //Set the list to empty after each loop, otherwise it will stack again and again.
-      data.forEach(item => {
-          $('.user-list ul').append(
-              `<li class="user">
-                  <div class="avatar"><img src="${item.avatar}" alt=""/></div>
-                  <div class="name">${item.username}</div>
-              </li>`
-          )
-      }
-  )
-      //Display the number of users
-      $('#userCount').text(data.length);
+  // 在客户端代码中，监听'userList'事件并更新用户列表
+  socket.on('userList', (usernames) => {
+    // 清空用户列表
+    $('.user-list ul').html('');
+
+    // 遍历用户名数组并添加到用户列表
+    usernames.forEach(username => {
+      $('.user-list ul').append(
+        `<li class="user">
+            <div class="name">${username}</div>
+        </li>`
+      );
+    });
+
+    // 更新用户数
+    $('#userCount').text(usernames.length);
   });
 
 });
